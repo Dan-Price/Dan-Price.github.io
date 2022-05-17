@@ -55,7 +55,8 @@
 <div id='instruction'>
 <p>Press the arrow keys to move to move the player around the game. Press the space bar to pause.</p></br>
 <p>Move to the odd cell out to help the prisoner escape to score points.</p></br>
-<p>Press the wasd keys to accelerate and deaccelerate</p></br>
+<p>Press the wasd keys to accelerate and deaccelerate.</p></br>
+<p>On Mobile devices, swipe the screen to move. Tap the screen to accrlerate. Tap and hold to slow down.</p>
 <p>The game ends when you touch a guard.</p></br> <p>Door and background sounds from soundimage.org</p> </br><p>Caught sound provided by games development society.</p> </br>
 <p>Uses images from pexels.com and unsplash.com</p></div>
 
@@ -82,13 +83,18 @@ highscore = 0;
 document.querySelectorAll('b')[1].innerHTML+=highscore;
 var screenY = window.innerHeight * 0.75;
 var screenX = window.innerWidth; //variable used to adjust the size of the game to fit the screen
+if (screenX < screenY ) {
+   //let temp = screenX
+   //s/creenX = screenY
+   //screenY = temp
+}
 /*
 get size of the elements, needed to place them in the middle of the page using their margin-Left values
 
 */
 var tags = ['h1!0','h3!0','.instructions','b!0','b!1','b!2','h1!1'];
 
-for (i = 0; i < document.querySelectorAll('#instructions p').length; i++ ) {
+for (let i = 0; i < document.querySelectorAll('#instructions p').length; i++ ) {
    tags.push("p!" + (i + 1) );
 } 
 
@@ -145,7 +151,7 @@ document.querySelectorAll('h1')[1].style.marginLeft = (screenX - sizes[tags.inde
 document.querySelector('h3').style.marginLeft = (screenX - sizes[tags.indexOf('h3!0')]) / 2 + 'px';
 var menuX = screenX / 3;
 var marginMenu = (menuX - sizes[3] - sizes[4] - sizes[5]) / 2;
-for ( i =  1; i < document.querySelectorAll('b').length; i++) {
+for (let  i =  1; i < document.querySelectorAll('b').length; i++) {
    document.querySelectorAll('b')[i].style.marginLeft = marginMenu + 'px';
 }
 document.querySelector('#footer').style.marginLeft = screenX / 3 + 'px';
@@ -155,11 +161,13 @@ var instructions = function () {
   document.querySelector('#canvas').style.display = 'none';
   document.querySelector('#instructions').style.display = 'block';
 }
+
 var menu = function () {
 	document.querySelector('#footer').style.display = 'block';
   document.querySelector('#canvas').style.display = 'block';
   document.querySelector('#instructions').style.display = 'none';
 }
+
 var score = 0;
 var person = function (x,y,xspeed,yspeed) {
    this.x = x;
@@ -167,6 +175,7 @@ var person = function (x,y,xspeed,yspeed) {
    this.xspeed = xspeed;
    this.yspeed = yspeed;
 }
+
 var player;
 var guards = [];
 var coordinates = [[0,0],[1,0],[2,0],[4,0],[6,0],[7,0],[8,0],[9,0],[10,0],[11,0],[12,0],[13,0],
@@ -177,9 +186,6 @@ var prisoncell = document.querySelector("#prisoncell");
 var target = document.querySelector("#target");
 var criminalimg = document.querySelector("#criminal");
 var guard = document.querySelector("#guard");
-
-
-
 
 document.querySelector('#canvas').innerHTML = "<canvas width='" + screenX + "px' height='" + screenY + "px'></canvas>"
 var canv = document.querySelector("canvas").getContext('2d');
@@ -196,6 +202,7 @@ var count = function () {
       cell();
    }
 }
+
 var x = Math.floor(Math.random() * coordinates.length);
 
 var cell = function () {
@@ -454,7 +461,7 @@ var newSpeed = function (e) {
     else {
 	  player[coord] = player[coord] * updown > 0 ? player[coord] : -1 * player[coord]
     }
-    console.log(coord)
+    
   }
 e.preventDefault();
  switch(e.keyCode) {
