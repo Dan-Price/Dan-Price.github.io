@@ -69,8 +69,9 @@
 <audio class='over'> <source  src='caught.wav' type='audio/wav'></audio>
 <audio class='door'> <source  src='door.mp3' type='audio/mp3'></audio> 
 <audio class='background'> <source  src='background.mp3' type='audio/mp3'></audio> 
-    </body>
+</body>
 <script> 
+
 var font;
 if (!localStorage.highscore) {
 localStorage.highscore = 0;
@@ -94,7 +95,7 @@ for (i = 0; i < document.querySelectorAll('#instructions p').length; i++ ) {
 var sizes = [];
 var tag = [];
 var heights = [];
-for (i = 0; i < tags.length; i++) {
+for (let i = 0; i < tags.length; i++) {
   
   tag = tags[i].split('!');
   tag.push(0);
@@ -124,20 +125,19 @@ var insSpacing = function () { //controls the positions of the elements in the i
    let totalHeight = 0;
 
    for (let i = 0; i < ins.length; i++ ) {
-     console.log(totalHeight)
-     console.log(ins[i] )
+    
      totalHeight+=heights[tags.indexOf(ins[i])]; 
    } //get the total height of all the elements that appear in the about screen
-   console.log(totalHeight)
+   
    let gaps = (screenY - totalHeight) / ins.length; 
-   console.log(gaps)
+ 
    for (let  i = 1; i < ins.length; i++) {
      split = ins[i].split('!');
      split.push(0);
      document.querySelectorAll(split[0])[Number(split[1])].style.marginTop = gaps + 'px';
    }
-   console.log(totalHeight);
-   console.log(screen.height);
+   //console.log(totalHeight);
+   //console.log(screen.height);
 }();
 
 document.querySelector('h1').style.marginLeft = (screenX - sizes[0]) / 2 + 'px';
@@ -200,12 +200,13 @@ var x = Math.floor(Math.random() * coordinates.length);
 
 var cell = function () {
   var img;
-  for (i = 0; i < coordinates.length; i++) {
-   img = (i === x) ? target : prisoncell
-   canv.drawImage(img,coordinates[i][0] * cellWidth,coordinates[i][1] * cellHeight,cellWidth,cellHeight);
+  for (let i = 0; i < coordinates.length; i++) {
+   img = (i === x) ? target : prisoncell // the cell has a different image if it is the target
+   canv.drawImage(img,coordinates[i][0] * cellWidth,coordinates[i][1] * cellHeight,cellWidth,cellHeight); // draw the cell
    canv.stroke();
   }
 }
+
 var criminal = function () {
  player = new person(cellWidth,cellHeight,cellWidth / 25 * 0 ,cellWidth / 25 * 0); 
  canv.drawImage(criminalimg, 0,cellHeight, cellWidth / 3, cellWidth / 3);
@@ -250,7 +251,7 @@ var within = function (start, end, test) { //check for a midpoint to confirm the
 PCollPoints = []
 
 var drawGuards = function () {
-  for (i = 0; i < guards.length; i++) {
+  for (let i = 0; i < guards.length; i++) {
     canv.drawImage(guard,guards[i].x,guards[i].y,cellWidth / 3, cellWidth / 3);
     guards[i].x += guards[i].xspeed;
     guards[i].y += guards[i].yspeed; 
@@ -291,7 +292,7 @@ var drawCriminal = function () {
    	     
    	  player.x -= player.xspeed;
      	player.y -= player.yspeed;
-      console.log(player)
+      //console.log(player)
       player0 = player
       colx = playerxpath(player.x, player.y, player.xspeed, player.yspeed, cellHeight * coordinates[i][1] - CrimSize )
       PCollPoints.push( [ colx, cellHeight * coordinates[i][1] - CrimSize ] )
@@ -305,13 +306,13 @@ var drawCriminal = function () {
       coly = playerypath(player.x, player.y, player.xspeed, player.yspeed, cellWidth + cellWidth * coordinates[i][0])
       PCollPoints.push( [ cellWidth + cellWidth * coordinates[i][0] , coly ] )
 
-      console.log(i)
+      //console.log(i)
       distances = []
       ds = []
       for (let j = 0; j < 4; j++) {
-        console.log(PCollPoints[j] )
+        //console.log(PCollPoints[j] )
         let k = PCollPoints[j]
-        console.log(j)
+        //console.log(j)
 
         d = pythagorous( [player.x,player.y], [ k[0],k[1]] ) 
         if (within([player.x,player.y], [player.x + player.xspeed, player.y + player.yspeed],k ) ) {
@@ -335,8 +336,8 @@ var drawCriminal = function () {
      	player.yspeed = collDirection < 2 ? -player.yspeed : player.yspeed;
       //when the player collides with the x axis of the cell
       PCollPoints = []
-      console.log('i =' + i)
-      console.log('x =' + x)
+      //console.log('i =' + i)
+      //console.log('x =' + x)
      	if ( i === x) { //i = the number assigned to the cell that the player has touched, x is the number for the target cell 
            addGuard();
            document.querySelector('audio[class="door"]').play();
@@ -356,7 +357,7 @@ var update = function () {
  canv.lineWidth = 1;
  canv.clearRect(0,0,screenX,screenY);
   for (let i = 0 ; i < guards.length; i++ ) {
-     if ( player.x < guards[i].x + wh && player.x + wh > guards[i].x && player.y < wh + guards[i].y && player.y + wh > guards[i].y  )  {
+     if ( player.x < guards[i].x + wh && player.x + wh > guards[i].x && player.y < wh + guards[i].y && player.y + wh > guards[i].y  )  { //detect if the player is touching the guards
      	gameOver();
      } 
   }
@@ -398,7 +399,7 @@ var start = function () {
   let background = document.querySelector('.background');
   background.play();
   background.onended = function() {
-  background.play()
+    background.play()
   };
   document.querySelector('#message').innerHTML = 'Pause';
   document.querySelector('#message').onclick = function () {
@@ -409,40 +410,40 @@ var start = function () {
 }
 
 var gameOver = function () {
- document.querySelector('audio[class="over"]').play();
- clearInterval(interval);
- if (score > highscore) {
-   highscore = score;
-   if (localStorage.highscore) {
+  document.querySelector('audio[class="over"]').play();
+  clearInterval(interval);
+  if (score > highscore) {
+    highscore = score;
+    if (localStorage.highscore) {
       localStorage.highscore = highscore;
-   }
-  
- }
- document.querySelector("#canvas").innerHTML = "<h1> Game Over</h1></br><p style='padding:0.2em'>Your score:<b>" + score + "</b></br></p> ";
-   document.querySelector('#message').style.display = 'inline';
-   document.querySelector('#message').onclick = function () {
-   	location.reload();
-   }
-   document.querySelector('#message').innerHTML = 'Play again';
-   var sizes = [];
-   var x;
-   for (let i = 0; i < document.querySelectorAll('#canvas *').length; i++) {
-     x = document.querySelectorAll('#canvas *')[i];
-     sizes[i] = parseFloat(window.getComputedStyle(x).getPropertyValue('width'));
-   }
-   for (let i = 0; i < document.querySelectorAll('#canvas *').length; i++) {
-     document.querySelectorAll('#canvas *')[i].style.marginLeft = (screenX - sizes[i]) / 2 + 'px' ;
-   }
-   document.querySelectorAll('b')[2].innerHTML = "High score: " + highscore;
+    }
+
+  }
+  document.querySelector("#canvas").innerHTML = "<h1> Game Over</h1></br><p style='padding:0.2em'>Your score:<b>" + score + "</b></br></p> ";
+  document.querySelector('#message').style.display = 'inline';
+  document.querySelector('#message').onclick = function () {
+    location.reload();
+  }
+  document.querySelector('#message').innerHTML = 'Play again';
+  var sizes = [];
+  var x;
+  for (let i = 0; i < document.querySelectorAll('#canvas *').length; i++) {
+    x = document.querySelectorAll('#canvas *')[i];
+    sizes[i] = parseFloat(window.getComputedStyle(x).getPropertyValue('width'));
+  }
+  for (let i = 0; i < document.querySelectorAll('#canvas *').length; i++) {
+    document.querySelectorAll('#canvas *')[i].style.marginLeft = (screenX - sizes[i]) / 2 + 'px' ;
+  }
+  document.querySelectorAll('b')[2].innerHTML = "High score: " + highscore;
 }
 
 var newSpeed = function (e) { 
   var sign = function (variable) { 
     //returns 1 if positive and -1 if negative
-    if ( variable == 0) {
-    return 0
+    if ( variable === 0) {
+      return 0
     }
-  	return variable / Math.abs(variable)
+  	 return variable / Math.abs(variable)
   }
 
   var changeSpeed = function (coord, updown) { //updown is 1 for downwards and -1 for upwards
@@ -453,6 +454,7 @@ var newSpeed = function (e) {
     else {
 	  player[coord] = player[coord] * updown > 0 ? player[coord] : -1 * player[coord]
     }
+    console.log(coord)
   }
 e.preventDefault();
  switch(e.keyCode) {
@@ -499,4 +501,6 @@ window.addEventListener("keydown", newSpeed , false);
 
 
 </script>
+<script src='mobileControls.js' ></script>
+
 </html>

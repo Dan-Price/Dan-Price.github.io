@@ -1,0 +1,401 @@
+<html ><head>
+<style>/*
+snow themes
+object in center is target
+target is snowball / 
+
+*/
+    body {
+        background-image:url("snow background.jpg");
+    }
+    canvas {
+        border: 1px solid grey;
+    }
+    #play {
+        background-color:aqua;
+        color:red;
+        text-align:center;
+        display:none;
+    }
+    <style>
+</head></style></head><body>
+<canvas height="500px" width="500px" > 
+    
+    </canvas>
+<h1 id="play" onclick="reset()">Play Again</h1>
+<script>
+
+var playerToUnban;
+var playerNames = [];
+if ( localStorage.playerNames ) {
+    let names = localStorage.playerNames.split(',')
+    playerNames[0] = names[0]
+    playerNames[1] = names[1]
+} else {
+    playerNames[0] = prompt("Name of player 1");
+    playerNames[1] = prompt("Name of player 2");
+    localStorage.playerNames = playerNames[0] + ',' + playerNames[1];
+}
+
+var list = function (Element) { 
+        return document.querySelectorAll(Element);
+}
+
+var newSpeed = function (e) {
+e.preventDefault();
+  console.log(e.keyCode)
+  switch(e.keyCode) {
+    case 192:
+    if (players[1].snowballs > 0) { 
+      thrown.push(new thrownBall(1,players[1].x,players[1].y));
+      players[1].snowballs--;
+    }
+    break;
+    case 191:
+    if (players[0].snowballs > 0) {
+      thrown.push(new thrownBall(0,players[0].x,players[0].y));
+      players[0].snowballs--;
+    }
+    break;
+    case 37:
+    players[0].xspeed-=(wh / 200);
+    break;
+    case 38:
+    players[0].yspeed-=(wh / 200);
+    break;
+    case 39:
+    players[0].xspeed+=(wh / 200);
+    break;
+    case 40:
+    players[0].yspeed+=(wh / 200);
+    break;
+    case 87:
+    players[1].yspeed-=(wh / 200);
+    break;
+    case 65:
+    players[1].xspeed-=(wh / 200);
+    break;
+    case 83:
+    players[1].yspeed+=(wh / 200);
+    break;
+    case 68:
+    players[1].xspeed+=(wh / 200);
+    break;
+  }
+  for (i = 0; i < 2; i++) {
+    if (players[i].banned) {
+        players[i].xspeed = 0;
+        players[i].yspeed = 0;
+    }
+  }
+}
+window.addEventListener("keydown", newSpeed , false);
+var wh = Math.min(window.innerHeight, window.innerWidth) * 0.9;
+
+
+var player = function (x, y) {
+    this.x = x;
+    this.banned = false;
+    this.origx = x;
+    this.origy = y;
+    this.y = y;
+    this.xspeed = 0;
+    this.yspeed = 0;
+    this.snowballs = 0;
+    this.score = 0;
+    this.targetx = wh - y;
+    this.targety = [wh / 10 * 4, wh / 10 * 6];
+    this.corners = [
+    [x - 1, y - 1],
+    [x + (wh / 16) + 1, y - 1],
+    [x - 1 , y + (wh / 16) + 1],
+    [x + (wh / 16) + 1, y + (wh / 16) + 1]];
+}
+
+var blocks = [
+    [0,wh * (37/120)],
+    [0,wh * (77 / 120)],
+    [wh * (38.5 / 100),wh * (37/120)],
+    [wh * (38.5 / 100),wh * (77 / 120)],
+    [wh * (75 / 100),wh * (37/120)],
+    [wh * (75 / 100),wh * (77 / 120)],
+];
+var snowball = function () {
+    this.x = Math.floor(Math.random() * wh);
+    this.y = Math.floor(Math.random() * wh);
+    this.xspeed = (Math.random() *  wh / 200) - (wh / 100);
+    this.yspeed = (Math.random() * wh / 200) - (wh / 100);
+}
+var button = function () {
+             this.data;
+}
+button.prototype = new snowball();
+var go = new button();
+var extraTime = new button();
+
+
+var thrownBall = function (by, startx,starty) {
+this.by = by;
+this.radius = wh / 60;
+this.smallRad = false;
+this.speedx = 0;
+this.speedy = 0;
+this.x = startx;
+this.y = starty;
+this.iter = 0;
+}
+
+thrownBall.prototype = new snowball();
+var thrown = [];
+var snowballs = [];
+for (i = 0; i < 20; i++) {
+   snowballs.push(new snowball);
+}
+var players = [];
+players[0] = new player(0.48 * wh, 0 );
+var canv = document.querySelector('canvas').getContext('2d');
+players[1] = new player(0.48 * wh , wh * (29/ 30)); 
+list("canvas")[0].height = wh;
+list("canvas")[0].width = wh;
+var w = canv.lineWidth;
+var color = canv.strokeStyle;
+var background = canv.fillStyle;
+var every = 50;
+
+var draw = function () {
+    canv.clearRect(0,0,wh,wh);
+
+
+
+    canv.fillStyle = "grey"; //draw the barriers to player movement
+
+    for (i = 0; i < blocks.length; i++) {
+        canv.fillRect(blocks[i][0],blocks[i][1],wh / 4,wh / 20);
+    }
+    canv.stroke();
+
+    canv.fillStyle = "green";
+    canv.strokeStyle = "red";
+    canv.beginPath();
+    canv.arc(go.x,go.y,wh / 40, 0, 2 * Math.PI);
+    canv.fill();
+    canv.strokeText("Rob", go.x - (wh * (1 / 60)), go.y);
+    canv.stroke();
+    canv.lineWidth = Math.max(wh / 400, 3);
+
+    canv.strokeStyle = "red"; //draw origin areas
+    canv.moveTo(wh * (3/8),wh);
+    canv.lineTo(wh * (5/8),wh);
+    canv.stroke();
+
+
+    canv.strokeStyle = "orange";
+    canv.beginPath();
+    canv.moveTo(wh * (3/8),wh / 500);
+    canv.lineTo(wh * (5/8),wh / 500);
+    canv.stroke();
+
+
+    canv.lineWidth = w; //reset linewidth to original value
+    canv.fillStyle = "white";
+    canv.strikeStyle = "white";
+    for (let i = 0; i < 20; i++) { //draw snowballs and update their speed
+      canv.beginPath();
+        canv.arc(snowballs[i].x,snowballs[i].y,wh / 80,0,2 * Math.PI);
+        snowballs[i].x+=snowballs[i].xspeed; 
+        snowballs[i].y+=snowballs[i].yspeed;
+        if (snowballs[i].x > wh || snowballs[i].x < 0) {
+            snowballs[i].xspeed = -snowballs[i].xspeed;
+        }
+        if (snowballs[i].y > wh || snowballs[i].y < 0) {
+            snowballs[i].yspeed = -snowballs[i].yspeed;
+        }
+        canv.fill();  
+    }
+    for (let i = 0; i < 20; i++) { //detect a collision between a player and a snowball
+        for (let j = 0; j < 2; j++) {
+            if (Math.abs(snowballs[i].x - players[j].x) < wh * (7/160)  && Math.abs(snowballs[i].y - players[j].y) < wh * (7/160)) {
+                snowballs[i] = new snowball();
+                players[j].snowballs++;
+                
+            }
+        }
+    }
+
+    var colours = ["orange","red"];
+    for (i = 0; i < thrown.length; i++) { //draw the thrown snowballs
+        thrown[i].iter++;
+        canv.lineWidth = 2;
+        canv.strokeStyle = colours[thrown[i].by];
+        canv.beginPath();
+        canv.arc(thrown[i].x,thrown[i].y,thrown[i].radius,0 , 2 * Math.PI);
+        //dy/dx    === o/a === tan(o);
+        var dy = thrown[i].y - players[1 - thrown[i].by].y; //x distance between player and thrownball in the x axis
+        //console.log(dy);
+        var dx = thrown[i].x - players[1 - thrown[i].by].x;
+        var alpha = Math.atan(dy/dx); //angle between the snowball and the player
+        var distance1 = Math.sqrt(Math.pow(dy,2) + Math.pow(dx,2)); 
+        if (thrown[i].smallRad) {
+            thrown[i].radius-=(wh / 5000); //decrease the raduis of the snowball as it moves
+        } else {
+            thrown[i].smallRad = true;
+        }
+     
+        thrown[i].speedy = (wh * Math.sin(alpha)) / 80; 
+        thrown[i].speedx = (wh * Math.cos(alpha)) / 80;
+        if (thrown[i].radius < wh / 120) {
+            thrown.splice(i,1);
+        } else { //if snowball is too small it completely disintegrates
+        thrown[i].x+=thrown[i].speedx;
+        thrown[i].y+=thrown[i].speedy;
+        }
+        for (let i = 0; i < thrown.length; i++) {
+            dy = thrown[i].y - players[1 - thrown[i].by].y;
+            dx = thrown[i].x - players[1 - thrown[i].by].x;
+            var distance2 = Math.sqrt(Math.pow(dy,2) + Math.pow(dx,2));
+            if (distance2 > distance1) { //if the new coordinates of the snowball is closer to the other player them it moves, otherwise it stays in the original position
+               thrown[i].x-=(2 * thrown[i].speedx);
+               thrown[i].y-=(2 * thrown[i].speedy);
+            }
+        }
+        canv.fill();
+        canv.stroke();
+    }
+    
+    var updown = 1;
+    for (i = 0; i < 2; i++) {   //show information of the snowballs each player has. 
+        canv.fillStyle = colours[i];
+        canv.beginPath();
+        canv.arc(wh * (3 / 60),(i * wh) + (wh * (3/60) * updown) ,wh / 60,0,2 * Math.PI);
+        canv.fill();
+        canv.strokeText(playerNames[i] + "'s snowballs:" + players[i].snowballs,wh * (5 / 60),(i * wh) + (wh * (3/60) * updown));
+        canv.strokeText(playerNames[i] + "'s score:" + players[i].score,wh * (5 / 60),(i * wh) + (wh * (5/60) * updown));
+        canv.stroke();
+        updown = -1;
+
+    }
+    canv.fillStyle = "orange";
+    canv.fillRect(players[0].x,players[0].y,wh / 30, wh / 30);
+    //draw character 2
+    canv.fillStyle = "red";
+    canv.fillRect(players[1].x ,players[1].y ,wh / 30, wh / 30);
+    canv.stroke();
+    for ( i = 0; i < 2; i++) {
+        players[i].x+=players[i].xspeed;
+        players[i].y+=players[i].yspeed;
+
+    }
+
+    for (let i = 0; i < thrown.length; i++) { //detect if a thrown snowball hits the other player
+        if ( Math.abs(thrown[i].y - players[1 - thrown[i].by].y) > Math.abs(dy)) {
+        players[i].x-=(2*(players[i].xspeed)); //other player is pushed backwards
+        players[i].y-=(2*(players[i].yspeed));
+
+        }
+
+    }
+
+    if (players[0].x < ((5/8) * wh) && players[0].x > ((3/8)* wh)  && players[0].y > wh) {
+        clearInterval(playing);
+        document.querySelector('#play').style.display = "block";
+        alert(playerNames[0] + " wins");
+    } else if (players[1].x <  ((5/8) * wh) && players[1].x > ((3/8)* wh)  && players[1].y < 0) {
+        clearInterval(playing);
+        document.querySelector('#play').style.display = "block";
+        alert(playerNames[1] + " wins");
+    } else {
+    for (let i = 0; i < 2; i++) {
+        if (players[i].y > wh || players[i].y < 0) {
+        players[i].x = players[i].origx;
+        players[i].y = players[i].origy;
+        players[i].yspeed = 0;
+        } 
+        if (players[i].x < 0 || players[i].x > wh) {
+            players[i].x =  players[i].x < 0 ? wh : 0;
+        }
+    } 
+    }
+    for (let i = 0; i < 2; i++ ) { //detect a player moving over the rob button
+        if (Math.abs(players[i].y - go.y) < wh * (11 / 220) && Math.abs(players[i].x - go.x) < wh * (11 / 220)) {
+            players[i].snowballs+=players[1 - i].snowballs;
+            players[1 - i].snowballs = 0;
+            players[1 - i].xspeed = 0;
+            players[1 - i].yspeed = 0;
+            players[1 - i].banned = true;
+            setTimeout(function() {unban(1 - i) }, 2000);
+            go.x = Math.random() * wh;
+            go.y = Math.random() * wh;
+        }
+    }
+    for (i = 0; i < 2; i++) {
+        for (j = 0; j < blocks.length; j++) { //detect a player colliding with the grey boxes and stops the player is they do collide
+            if (players[i].y < blocks[j][1] + (wh / 20) && players[i].y + (wh / 30) > blocks[j][1] && players[i].x < blocks[j][0] + (wh / 4) && players[i].x + (wh / 30) > blocks[j][0]) {
+               players[i].x-=players[i].xspeed;
+               players[i].y-=players[i].yspeed;
+               players[i].xspeed = 0;
+               players[i].yspeed = 0;  
+            }
+            
+        }
+
+    }
+    if (players[0].x < players[1].x + (wh / 30) && players[0].x + (wh / 30) > players[1].x && players[0].y < players[1].y + (wh / 30) && players[0].y + (wh / 30) > players[1].y) { //detect two players colliding with each other
+        for (j = 0; j < 2; j++) {
+           players[j].x-=players[j].xspeed;
+           players[j].y-=players[j].yspeed;
+           players[j].xspeed = 0;
+           players[j].yspeed = 0;
+        }
+
+    }
+    for (let i = 0; i < thrown.length; i++) {
+        for (let j = 0; j < 2; j++) { //detect the thrown snow ball colliding with the player
+           if (thrown[i].by !== j && ( (Math.abs(thrown[i].x - players[j].x)) < (thrown[i].radius + (wh / 60))) && Math.abs((thrown[i].y - players[j].y)) < (thrown[i].radius + (wh / 60)) )  {
+            players[j].x = players[j].origx;
+            players[j].y = players[j].origy;
+            players[1-j].score += 1000 / Math.round(thrown[i].radius)
+           }
+        }
+    }
+}
+
+var unban = function (playerToUnban) {
+    players[playerToUnban].banned = false;
+}
+
+var moveButton = function() {
+    go.x = Math.random() * wh;
+    go.y = Math.random() * wh;
+    setTimeout(moveButton, Math.random() * 10000);
+}
+moveButton();
+var playing = setInterval(draw, 50);
+
+var reset = function () {
+    document.querySelector("#play").style.display = "none";
+    for (i = 0; i < 2; i++) {
+        players[i].x = players[i].origx;
+        players[i].y = players[i].origy;
+        players[i].xspeed = 0;
+        players[i].yspeed = 0;
+        thrown.splice(0,thrown.length);
+        players[i].snowballs = 0;
+        go.x = Math.random() * wh;
+        go.y = Math.random() * wh;
+       
+    }
+    playing = setInterval(draw,50);
+}
+stop = setInterval(function() {
+    clearInterval(playing)
+    document.querySelector('#play').style.display = "block";
+    winner = players[0].score > players[1].score ? 0 : 1
+    if ( playerNames[0].score !== playerNames[0] ) {
+        alert(playerNames[winner].name + ' wins.' )
+    } else {
+        alert('Its a draw.')
+    }
+    canvas.height = wh * 0.9 + 'px'
+},5 * 60000)
+</script></body></html>
+
