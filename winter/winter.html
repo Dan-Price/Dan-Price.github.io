@@ -1,12 +1,7 @@
 <html ><head>
-<style>/*
-snow themes
-object in center is target
-target is snowball / 
-
-*/
+<style>
     body {
-        background-image:url("snow background.jpg");
+        background-image:url("Snow background.jpg");
         background-size: cover;
     }
     canvas {
@@ -32,7 +27,7 @@ target is snowball /
         display:inline-block;
 
     }
-    #flex { /*, #settings {*/
+    #flex {
         display:flex;
     }
     <style>
@@ -108,9 +103,10 @@ if ( localStorage.playerNames ) {
     localStorage.playerNames = playerNames[0] + ',' + playerNames[1];
 }
 var gameMode = localStorage.gameMode || '2 Player';
-if ('ontouchstart' in window) {
-    gameMode === 'Ai';//2 player is incompatible with mobile devices
-}
+//if ('ontouchstart' in window) {
+    gameMode = 'Ai';//2 player is incompatible with mobile devices
+    console.log(gameMode)
+//}
 
 
 var list = function (Element) { 
@@ -327,14 +323,14 @@ var update = function (ai) {
         end(playerNames[1])
     } else {
     for (let i = 0; i < 2; i++) {
-        if (players[0].y > wh && !ai) {
+        //if (players[0].y > wh && !ai) {
             
-            console.log(players[0].y)
-            console.log(ai)
-        }
-        if (!ai) {
-            console.log([players[0].x,players[0].y])
-        }
+            //console.log(players[0].y)
+           // console.log(ai)
+        //}
+        //if (!ai) {
+            //console.log([players[0].x,players[0].y])
+        //}
         if (players[i].y > wh || players[i].y < 0) {
 
         players[i].x = players[i].origx;
@@ -393,7 +389,18 @@ var update = function (ai) {
 
 var draw = function () {
     canv.clearRect(0,0,wh,wh);
+    let gamePlaying = performance.now();
+
+    let  timeLeft = 300 - (gamePlaying - gameStart) / 1000
+    timeLeft = [String(Math.floor(timeLeft / 60)),String(Math.floor(timeLeft % 60))]
+    timeLeft = timeLeft[0] + ':' + (timeLeft[1].length === 1 ? '0' + timeLeft[1] : timeLeft[1])
     canv.fillStyle = "grey"; //draw the barriers to player movement
+    let font = canv.font;
+    canv.strokeStyle = 'black'
+    canv.font = '18px sans-serif'
+    canv.strokeText('Time remaining : ' + timeLeft,wh * 42/60, wh * (3/60))
+    canv.font = '12px sans-serif'
+
 
     for (let i = 0; i < blocks.length; i++) {
         canv.fillRect( blocks[i][0],blocks[i][1], wh / 4, wh / 20 );
@@ -420,6 +427,7 @@ var draw = function () {
     canv.moveTo(wh * (3/8),wh / 500);
     canv.lineTo(wh * (5/8),wh / 500);
     canv.stroke();
+
 
 
     canv.lineWidth = w; //reset linewidth to original value
@@ -534,9 +542,12 @@ var end = function(player) {
     }
 };
 
+let gameStart = performance.now();
+
 stop = setTimeout(function() {
-    //clearInterval(playing);
-    //document.querySelector('#play').style.display = "block";
+
+    
+
     end();
 },300000) //time limit of 5 minutes
 
@@ -583,9 +594,9 @@ var state = function () {
     }
 
     this.score = function () {
-        var score = this.players[1].y //x coordinates
+        var score = this.players[1].y //y coordinates of agent
         xtargets = [wh * (3/8),wh * (5/8)]
-        if ( this.players[1].y < (37/120 * wh) ) {
+        if ( this.players[1].y + wh / 30 < (37/120 * wh) ) {
             if (this.players[1].x > xtargets[1]) {
                 score += this.players[1].x - xtargets[1] * 0.95   
             } else if ( this.players[1].x < xtargets[0]) { 
@@ -605,45 +616,14 @@ var state = function () {
             } else if (players[1].x >= wh / 2 &&  players[1].x < 127/200*wh ) {
                 score += 127/200*wh - players[1].x
             }
+            score *= 1.5
         }
-        //ydistance = players[1].y - rob.y 
-        //xdistance = players[1].x - rob.x 
-        //score+=ydistance*0.2;
-        //score+=xdistance*0.2;
-        /*
-        for (let ball of thrownBall ) {
-          if (ball.by === 0) {
-              let distance = Math.abs(ball.x - players[1].x) + Math.abs(ball.y - players[1].y)
-              if (distance > wh / 8) { //run away from ball
-                  score+=(500 - distance)
-              }
-          }
-        }
-        */
         if ( Math.abs(this.players[1].xspeed) < 1e-10 && Math.abs(this.players[1].yspeed) < 1e-10 )  {
-            score *= 1.2
+            score *= 2
         }
        
         return score
-    }
-    /*this.s = function () {
-        var score = this.players[1].y //x coordinates
-        xtargets = [wh * (3/8),wh * (5/8)]
-        //if (this.players[1.y] > ) {
-
-        //}/
-        if (this.players[1].x > xtargets[1]) {
-            score += this.players[1].x - xtargets[1]   
-        } else if ( this.players[1].x < xtargets[0]) { 
-            score += xtargets[0] - this.players[1].x
-        } 
-        
-        // y coordinates
-        //up forbidden - left
-        //down fordidden - right
-        return score 
-    }*/
-    
+    }    
 }
 agent = function () {
 
@@ -729,6 +709,7 @@ var ai = function () {
             
     }
     states[bestdepth][index].load()
+
     bestState = states[bestdepth][index] 
 }
 
