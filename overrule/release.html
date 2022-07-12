@@ -84,9 +84,9 @@ document.querySelectorAll('b')[1].innerHTML+=highscore;
 var screenY = window.innerHeight * 0.75;
 var screenX = window.innerWidth; //variable used to adjust the size of the game to fit the screen
 if (screenX < screenY ) {
-   //let temp = screenX
-   //s/creenX = screenY
-   //screenY = temp
+   let temp = screenX
+   screenX = screenY
+   screenY = temp
 }
 /*
 get size of the elements, needed to place them in the middle of the page using their margin-Left values
@@ -463,6 +463,7 @@ var newSpeed = function (e) {
     }
     
   }
+
 e.preventDefault();
  switch(e.keyCode) {
     case 38: //up
@@ -504,6 +505,7 @@ e.preventDefault();
 
   }
 }
+
 window.addEventListener("keydown", newSpeed , false);
 
 

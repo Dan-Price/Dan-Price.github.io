@@ -12,89 +12,51 @@ target is snowball /
     canvas {
         border: 1px solid grey;
     }
-    .newGame {
+    #newGame {
         background-color:aqua;
         color:red;
         text-align:center;
         display:none;
-        margin:auto;
     }
     #settings {
         display: none;
-        text-align:center;
-        color:red;
-    }
-    #settings > h1, #settings p {
-        background-color: aqua;
-        border-radius:10px;
-        border: 2px solid grey;
-        padding: 4px;
-        display:inline-block;
-
-    }
-    #flex { /*, #settings {*/
-        display:flex;
     }
     <style>
 </head></style></head><body>
 <canvas height="500px" width="500px" > 
     
     </canvas>
-<div id='flex'>
-    <h1 class='newGame' id="play" onclick="reset()">Play Again</h1>
-    <h1 class='newGame' onclick='settings()'> Settings</h1>
-</div>
+<h1 class='newGame' id="play" onclick="reset()">Play Again</h1>
+<h1 class='newGame' onclick='settings()'> Settings</h1>
 <div id='settings'> 
-    <h1> Settings </h1>
+    <h1> Settings <h1>
     <form>
-        <p for='mode'>
-            Mode:
-            <select id='mode'>
-                <option value='2 Players'>2 Player</option>
-                <option value='Ai'>Ai</option>
-            </select>
-        </p> </br>
-        <p for='player1'>
-            Player 1:
-            <input id='player1' type='text' placeholder='name of player 1'/>
-        </p> </br>
-        <p for='player2'>
-            Player 2:
-            <input id='player2' type='text' placeholder='name of player 2'/>
-        </p>
-       
+        <p>Mode:<p>
+        <select>
+            <option>2 Player</option>
+            <option>Ai</option>
+        </select>
+        <p>Player 1</p>
+        <input type='text' placeholder='name of player 1'/>
+        <p>Player 2</p>
+        <input type='text' placeholder='name of player 2'/>
     </form>
-    <h1 id="play" onclick="submit()">Play Again</h1>
+    <h1 class='newGame' id="play" onclick="submit()">Play Again</h1>
 </div>
 <script src='mobileControls.js' ></script>
 <script>
 var settings = function () {
-    document.querySelectorAll('.newGame')[1].style.display='none';
-    document.querySelector('canvas').style.display = 'none';
-    document.querySelectorAll('.newGame')[0].style.display = 'none';
-    document.querySelectorAll('.newGame')[1].style.display = 'none';
-    document.querySelector('#settings').style.display = 'block';
+    document.querySelector('#settings').style.display = block;
     document.querySelectorAll('#settings input')[0].value = playerNames[0];
     document.querySelectorAll('#settings input')[1].value = playerNames[1];
-    if ('ontouchstart' in window) {
-        let two = document.querySelector('option');
-        two.value = 'Ai';
-        two.innerHTML = '2 Player is only compable with computers';
-    }
 }
 var submit = function () {
-    document.querySelector('canvas').style.display = 'block'
-    document.querySelector('#settings').style.display = 'none';
+    document.querySelector('#settings').style.display = none;
     playerNames[0] = document.querySelectorAll('#settings input')[0].value;
     playerNames[1] = document.querySelectorAll('#settings input')[1].value;
-    localStorage.playerNames = playerNames[0] + ',' + playerNames[1];
     gameMode = document.querySelector('select').value
-    localStorage.gameMode = gameMode;
     reset()
 }
-document.forms[0].addEventListener('keydown',function(e){
-    e.stopPropagation();
-},false)
 
 var playerToUnban;
 var playerNames = [];
@@ -107,19 +69,13 @@ if ( localStorage.playerNames ) {
     playerNames[1] = prompt("Name of player 2");
     localStorage.playerNames = playerNames[0] + ',' + playerNames[1];
 }
-var gameMode = localStorage.gameMode || '2 Player';
-if ('ontouchstart' in window) {
-    gameMode === 'Ai';//2 player is incompatible with mobile devices
-}
-
 
 var list = function (Element) { 
     return document.querySelectorAll(Element);
 }
 
-var paused = false;
 var newSpeed = function (e) {
-  e.preventDefault();  
+  e.preventDefault();
   switch(e.keyCode) {
     case 192:
     if (players[1].snowballs > 0) { 
@@ -133,16 +89,6 @@ var newSpeed = function (e) {
       players[0].snowballs--;
     }
     break;
-    case 32:
-    if (!paused) {
-        clearInterval(playing);
-    } else {
-        playing = setInterval( function () {
-        playGame();
-        } , 50);
-    }
-    paused = !paused;
-    break; 
     case 37:
     players[0].xspeed-=(wh / 200);
     break;
@@ -177,9 +123,7 @@ var newSpeed = function (e) {
 }
 window.addEventListener("keydown", newSpeed , false);
 
-
 var wh = Math.min(window.innerHeight, window.innerWidth) * 0.9;
-document.querySelector('#flex').style.width = wh; 
 
 
 var player = function (x, y) {
@@ -249,7 +193,7 @@ var color = canv.strokeStyle;
 var background = canv.fillStyle;
 var every = 50;
 
-var update = function (ai) {
+var update = function () {
     for (let i = 0; i < 20; i++) {
         snowballs[i].x+=snowballs[i].xspeed; 
         snowballs[i].y+=snowballs[i].yspeed;
@@ -278,7 +222,7 @@ var update = function (ai) {
         var alpha = Math.atan(dy/dx); //angle between the snowball and the player
         var distance1 = Math.sqrt(Math.pow(dy,2) + Math.pow(dx,2)); 
         if (thrown[i].smallRad) {
-            thrown[i].radius-=(wh / 5000); //decrease the radius of the snowball as it moves
+            thrown[i].radius-=(wh / 5000); //decrease the raduis of the snowball as it moves
         } else {
             thrown[i].smallRad = true;
         }
@@ -321,22 +265,13 @@ var update = function (ai) {
 
     
 
-    if (players[0].x < ((5/8) * wh) && players[0].x > ((3/8)* wh)  && players[0].y > wh && !ai) {
+    if (players[0].x < ((5/8) * wh) && players[0].x > ((3/8)* wh)  && players[0].y > wh) {
         end(playerNames[0]);
-    } else if (players[1].x <  ((5/8) * wh) && players[1].x > ((3/8)* wh)  && players[1].y < 0 && !ai) {
+    } else if (players[1].x <  ((5/8) * wh) && players[1].x > ((3/8)* wh)  && players[1].y < 0) {
         end(playerNames[1])
     } else {
     for (let i = 0; i < 2; i++) {
-        if (players[0].y > wh && !ai) {
-            
-            console.log(players[0].y)
-            console.log(ai)
-        }
-        if (!ai) {
-            console.log([players[0].x,players[0].y])
-        }
         if (players[i].y > wh || players[i].y < 0) {
-
         players[i].x = players[i].origx;
         players[i].y = players[i].origy;
         players[i].yspeed = 0;
@@ -385,7 +320,7 @@ var update = function (ai) {
            if (thrown[i].by !== j && ( (Math.abs(thrown[i].x - players[j].x)) < (thrown[i].radius + (wh / 60))) && Math.abs((thrown[i].y - players[j].y)) < (thrown[i].radius + (wh / 60)) )  {
             players[j].x = players[j].origx;
             players[j].y = players[j].origy;
-            players[1-j].score += Math.round(1000 / thrown[i].radius)
+            players[1-j].score += 1000 / Math.round(thrown[i].radius)
            }
         }
     }
@@ -511,22 +446,19 @@ var reset = function () {
         playGame();
     },50);
 }
-
+var gameMode = '2 Player';
 var gameover = false;
 var end = function(player) {
-    console.log(gameover);
     if (!gameover) {
-        draw();
         gameover = true;
         clearInterval(playing);
-        document.querySelectorAll('.newGame')[0].style.display='block';
-        document.querySelectorAll('.newGame')[1].style.display='block';
+        document.querySelector('#play').style.display = "block";
         if (player) {
             alert(player + ' wins')
             return
         }
         winner = players[0].score > players[1].score ? 0 : 1
-        if ( playerNames[0].score !== playerNames[1].score ) {
+        if ( playerNames[0].score !== playerNames[0] ) {
             alert(playerNames[winner] + ' wins.' )
         } else {
             alert('Its a draw.')
@@ -535,9 +467,9 @@ var end = function(player) {
 };
 
 stop = setTimeout(function() {
-    //clearInterval(playing);
-    //document.querySelector('#play').style.display = "block";
-    end();
+    clearInterval(playing);
+    document.querySelector('#play').style.display = "block";
+
 },300000) //time limit of 5 minutes
 
 var state = function () {
@@ -587,9 +519,9 @@ var state = function () {
         xtargets = [wh * (3/8),wh * (5/8)]
         if ( this.players[1].y < (37/120 * wh) ) {
             if (this.players[1].x > xtargets[1]) {
-                score += this.players[1].x - xtargets[1] * 0.95   
+                score += this.players[1].x - xtargets[1]   
             } else if ( this.players[1].x < xtargets[0]) { 
-                score += xtargets[0] - this.players[1].x * 0.95
+                score += xtargets[0] - this.players[1].x
             } 
         }
         else {
@@ -704,7 +636,7 @@ var ai = function () {
                 if ( agent[option]() ) { //in every possible branch, 
                     
                     let s = new state();//create new state
-                    update(true);//update player positions
+                    update();//update player positions
                     s.save([l,i,option])//save the state
                     states[l+1].push(s);//add to the array
                     scores[l+1].push(s.score() );
