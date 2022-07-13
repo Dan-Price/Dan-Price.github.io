@@ -551,7 +551,7 @@ stop = setTimeout(function() {
     end();
 },300000) //time limit of 5 minutes
 
-var state = function () {
+/*var state = function () {
     this.snowballs;
     this.players;
     this.thrown;
@@ -570,7 +570,8 @@ var state = function () {
         rob = this.rob;
     }
     
-}
+}*/
+
 var state = function () {
     this.snowballs = [];
     this.players = [];
@@ -604,9 +605,7 @@ var state = function () {
             } 
         }
         else {
-            //37/120*wh -- start1
-            //wh * (75 / 100) -- start2
-            //wh/4 width
+ 
             if (players[1].x < wh / 4) {
                 score+=wh/4 - players[1].x
             } else if (players[1].x > wh * 0.75) {
@@ -625,6 +624,7 @@ var state = function () {
         return score
     }    
 }
+
 agent = function () {
 
 }
@@ -688,18 +688,14 @@ var ai = function () {
                     s.save([l,i,option])//save the state
                     states[l+1].push(s);//add to the array
                     scores[l+1].push(s.score() );
-
                 }
             }
             newbest = Math.min(best,...scores[l])
             if ( newbest < best ) {
                 best = newbest
                 bestdepth = l
-
             }
         }
-        
-
     }
     index = scores[bestdepth].indexOf(best)
     while (bestdepth !== 1) {
@@ -708,7 +704,10 @@ var ai = function () {
             bestdepth--;
             
     }
-    states[bestdepth][index].load()
+    states[0][0].load();
+    action = states[bestdepth][index].last[2];
+    agent[option]();
+    //states[bestdepth][index].load()
 
     bestState = states[bestdepth][index] 
 }

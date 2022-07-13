@@ -142,8 +142,7 @@ var insSpacing = function () { //controls the positions of the elements in the i
      split.push(0);
      document.querySelectorAll(split[0])[Number(split[1])].style.marginTop = gaps + 'px';
    }
-   //console.log(totalHeight);
-   //console.log(screen.height);
+
 }();
 
 document.querySelector('h1').style.marginLeft = (screenX - sizes[0]) / 2 + 'px';
@@ -195,38 +194,37 @@ canv.font = "40px sarif";
 var cellWidth = screenX / 14;
 var cellHeight = screenY / 8;
 
-var counti = 0;
+var loaded = 0;
 var count = function () {
-   counti++;
-   if (counti === 2) {
-      cell();
+   loaded++;
+   if (loaded === 4) {
+      drawAll();
    }
 }
 
 var x = Math.floor(Math.random() * coordinates.length);
 
-var cell = function () {
-  var img;
-  for (let i = 0; i < coordinates.length; i++) {
-   img = (i === x) ? target : prisoncell // the cell has a different image if it is the target
-   canv.drawImage(img,coordinates[i][0] * cellWidth,coordinates[i][1] * cellHeight,cellWidth,cellHeight); // draw the cell
-   canv.stroke();
-  }
-}
-
 var criminal = function () {
  player = new person(cellWidth,cellHeight,cellWidth / 25 * 0 ,cellWidth / 25 * 0); 
- canv.drawImage(criminalimg, 0,cellHeight, cellWidth / 3, cellWidth / 3);
- canv.stroke();
+ //canv.drawImage(criminalimg, 0,cellHeight, cellWidth / 3, cellWidth / 3);
+ //canv.stroke();
+ loaded++;
+   if (loaded === 4) {
+      drawAll();
+   }
 }
 
 var addGuard = function () {
  var speedX = Math.floor(Math.random() * cellWidth / 15 ) + cellWidth / 40 ;
  var speedY = Math.floor(Math.random() * cellWidth / 15 ) + cellWidth / 40 ;
  guards.push(new person(Math.floor(Math.random() * screenX ),Math.floor(Math.random() * screenY ),speedX,speedY));
- canv.drawImage(guard, guards[guards.length - 1].x,guards[guards.length - 1].y, cellWidth / 3, cellWidth / 3);
+ //canv.drawImage(guard, guards[guards.length - 1].x,guards[guards.length - 1].y, cellWidth / 3, cellWidth / 3);
 
- canv.stroke();
+ //canv.stroke();
+ loaded++;
+   if (loaded === 4) {
+      drawAll();
+   }
 }
 
 var playerxpath = function (x0,y0,dx,dy,y) {
@@ -255,32 +253,31 @@ var within = function (start, end, test) { //check for a midpoint to confirm the
 }
 
 
-PCollPoints = []
-
-var drawGuards = function () {
+var drawAll = function () {
+  var img;
+  for (let i = 0; i < coordinates.length; i++) {
+   img = (i === x) ? target : prisoncell // the cell has a different image if it is the target
+   canv.drawImage(img,coordinates[i][0] * cellWidth,coordinates[i][1] * cellHeight,cellWidth,cellHeight); // draw the cell
+   canv.stroke();
+  }
+  var CrimSize = cellWidth / 3
+  canv.drawImage(criminalimg,player.x, player.y, CrimSize, CrimSize);
+  canv.stroke();
   for (let i = 0; i < guards.length; i++) {
     canv.drawImage(guard,guards[i].x,guards[i].y,cellWidth / 3, cellWidth / 3);
-    guards[i].x += guards[i].xspeed;
-    guards[i].y += guards[i].yspeed; 
     canv.stroke();
-    if (guards[i].y < 0 || guards[i].y + cellWidth / 3 > screenY) {
-       guards[i].yspeed = -guards[i].yspeed;
-    }
-    if (guards[i].x < 0 || guards[i].x + cellWidth / 3 > screenX) {
-       guards[i].xspeed = -guards[i].xspeed;
-    }
   }
 }
 
+PCollPoints = []
 
 var wh = cellWidth / 3;
-var drawCriminal = function () {
+var criminal = function () {
 	var teleported = 0;
   var CrimSize = cellWidth / 3
-  canv.drawImage(criminalimg,player.x, player.y, CrimSize, CrimSize);
   player.x += player.xspeed;
   player.y += player.yspeed;
-  canv.stroke();
+  
   if (player.x < 0) { //detect the player moving off the screen
     player.x = screenX;
   } else if (player.y < 0) {
@@ -357,6 +354,21 @@ var drawCriminal = function () {
   
 }
 
+
+var guards = function () {
+  for (let i = 0; i < guards.length; i++) {
+    guards[i].x += guards[i].xspeed;
+    guards[i].y += guards[i].yspeed; 
+    
+    if (guards[i].y < 0 || guards[i].y + cellWidth / 3 > screenY) {
+       guards[i].yspeed = -guards[i].yspeed;
+    }
+    if (guards[i].x < 0 || guards[i].x + cellWidth / 3 > screenX) {
+       guards[i].xspeed = -guards[i].xspeed;
+    }
+  }
+}
+
 var update = function () {
  if (score > highscore) {
    document.querySelectorAll('b')[2].innerHTML = "High score: " + highscore;
@@ -368,9 +380,9 @@ var update = function () {
      	gameOver();
      } 
   }
- cell();
- drawCriminal();
- drawGuards();
+ drawAll();
+ criminal();
+ guards();
  canv.strokeText("Score:" + score,0, cellHeight * 0.9);
  canv.stroke();
 }
@@ -511,5 +523,6 @@ window.addEventListener("keydown", newSpeed , false);
 
 </script>
 <script src='mobileControls.js' ></script>
+<script src='overruleAi.js'></script>
 
 </html>
