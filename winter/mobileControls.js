@@ -17,8 +17,7 @@
 	      thrown.push(new thrownBall(0,players[0].x,players[0].y));
 	      players[0].snowballs--;
 	    }
-		//console.log('clicked')
-		//console.log(start)
+	
 	})
     canvas.addEventListener('touchmove',function (e) {
     	e.preventDefault();

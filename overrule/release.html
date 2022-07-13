@@ -272,7 +272,7 @@ var drawAll = function () {
 PCollPoints = []
 
 var wh = cellWidth / 3;
-var criminal = function () {
+var updateCriminal = function () {
 	var teleported = 0;
   var CrimSize = cellWidth / 3
   player.x += player.xspeed;
@@ -355,7 +355,7 @@ var criminal = function () {
 }
 
 
-var guards = function () {
+var updateGuards = function () {
   for (let i = 0; i < guards.length; i++) {
     guards[i].x += guards[i].xspeed;
     guards[i].y += guards[i].yspeed; 
@@ -381,8 +381,8 @@ var update = function () {
      } 
   }
  drawAll();
- criminal();
- guards();
+ updateCriminal();
+ updateGuards();
  canv.strokeText("Score:" + score,0, cellHeight * 0.9);
  canv.stroke();
 }
